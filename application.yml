@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13
+    container_name: auth_db
+    environment:
+      POSTGRES_USER: youruser
+      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_DB: authdb
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  app:
+    build: .
+    container_name: go-auth
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: youruser
+      DB_PASSWORD: yourpassword
+      DB_NAME: authdb
+      DB_SSLMODE: disable
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+    command: ["./main"]
+
+volumes:
+  db_data:
